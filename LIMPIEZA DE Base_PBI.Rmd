@@ -1,0 +1,49 @@
+BAJO LA BASE A TRAVÉS DE LINK DE GITHUB
+```{r}
+#Bajo la data de mi repositorio de Github --> Data la bajé de la página de Banco Mundial
+lkXLSX="https://github.com/YURFA-Pucp/ESTADISTICA_2/raw/master/Base_PBI_Estadistica2.xlsx"
+dataPBI=import(lkXLSX)
+```
+LIMPIEZA DE BASE
+```{r}
+#Borro espacios en los nombres de las bases 
+names(dataPBI)=gsub(" ","",names(dataPBI))
+names(dataPBI)
+```
+```{r}
+#Me quedo solo con algunas filas
+dataPBI=dataPBI[,c(1,13,14, 15)]
+```
+```{r}
+str(dataPBI)
+```
+```{r}
+#Cambio de nombre de la columna de pais
+names(dataPBI)[names(dataPBI)=="CountryName"]="Pais"
+#Borrar las tildes de la columna de los países 
+library (stringi)
+dataPBI$Pais=stri_trans_general(dataPBI$Pais,"Latin-ASCII")
+```
+DATA CON SOLO PAÍSES DE AMÉRICA LATINA
+```{r}
+#Primero: bajo la base 
+Excel="https://github.com/YURFA-Pucp/ESTADISTICA_2/raw/master/Latinoam%C3%A9rica.xlsx"
+dataAL=import(Excel)
+#Segundo limpieza de datos
+names(dataAL)=c("Pais", "Dimension")
+dataAL$Dimension=as.numeric(dataAL$Dimension)
+str(dataAL)
+##Cambio el nombre de Rep. Dominicana a Republica Dominicana
+dataAL[13,1]="Republica Dominicana"
+##Quito tildes}
+dataAL$Pais=stri_trans_general(dataAL$Pais,"Latin-ASCII")
+```
+REALIZO EL MERGE
+```{r}
+Base_Final=merge(dataAL,dataPBI) 
+#Borro la segunda fila, que por ahora todavía no es útil
+Base_Final$Dimension=NULL
+#Compruebo que la cantidad de filas sea las correctas 
+str(Base_Final)
+```
+TODO CORRECTO
